@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Fight Club</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main>
+        
+        <section class="register-screen" id="register-screen">
+
+            <h1 class="register-screen__title">Create Your Character</h1>
+            <label for="player-name">Character name</label>
+            <input class="register-screen__input" type="text" id="player-name" placeholder="Type name">
+            <button class="register-screen__btn" id="register-screen__btn save-name">Create Character</button>
+
+        </section>
+
+        <section class="lobby-screen hidden">
+
+            <button class="lobby-screen__btn">Fight!</button>
+
+        </section>
+    
+        <section class="fight-screen hidden" id="fight-screen">
+
+            <div class="fight-screen__player">
+
+                <h2 class="fight-screen__player-name" id="fight-screen__player-name player-name-display"></h2>
+
+                <div class="fight-screen__player-hp" id="fight-screen__player-hp player-hp"></div>
+
+                <div class="fight-screen__player-hits">
+                    <button data-zone="head">Hit: Head</button>
+                    <button data-zone="body">Hit: Body</button>
+                    <button data-zone="legs">Hit: Legs</button>
+                </div>
+
+                <div class="fight-screen__player-blocks">
+                    <button data-zone="head">Block: Head</button>
+                    <button data-zone="body">Block: Body</button>
+                    <button data-zone="legs">Block: Legs</button>
+                </div>
+            </div>
+
+            <div class="fight-screen__enemy" id="fight-screen__enemy enemy">
+                <h2 class="fight-screen__enemy-name" id="fight-screen__enemy-name enemy-name"></h2>
+                <div class="fight-screen__enemy-hp" id="fight-screen__enemy-hp enemy-hp"></div>
+            </div>
+
+            <button class="fight-screen__btn" id="fight-screen__btn attack__btn">Finish your move</button>
+
+            <aside class="fight-screen__battle-log" id="fight-screen__battle-log battle-log"></aside>
+
+        </section>
+
+    </main>
+
+    <script src="./script.js"></script>
+</body>
+</html>

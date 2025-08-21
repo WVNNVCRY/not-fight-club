@@ -56,12 +56,12 @@ const enemies = [
 
 // FIGHT VARIABLES
 
-let currentEnemyIndex = 0;
+let currentEnemyIndex = 2;
 
 let playerAttack = null;
 let playerBlocks = [];
 
-const attackButtons = document.querySelectorAll('#player .zones button');
+const attackButtons = document.querySelectorAll('#enemy .zones button');
 const blockButtons = document.querySelectorAll('#player .blocks button');
 
 // DOM
@@ -71,6 +71,7 @@ const registerScreen = document.getElementById('register-screen');
 const lobbyScreen = document.getElementById('lobby-screen')
 const fightScreen = document.getElementById('fight-screen');
 const battleLog = document.getElementById('battle-log');
+const logsContainer = document.getElementById('logs-container')
 
 // ELEMENTS
 
@@ -131,6 +132,7 @@ function startFight() {
     lobbyScreen.classList.add('hidden');
     fightScreen.classList.remove('hidden');
     updateUI();
+    addLogs(`FIGHT!`)
 }
 
 // UI UPDATE
@@ -287,6 +289,7 @@ function endFight() {
         // START NEW FIGHT
         startFight()
     });
-    fightScreen.appendChild(nxtBtn);
+    logsContainer.insertBefore(nxtBtn, attackBtn);
+    nxtBtn.classList.add('logs-container__next-btn');
 }
 })

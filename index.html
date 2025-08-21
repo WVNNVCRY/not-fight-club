@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-    <main class="main">
+    <main class="main container">
         
         <section class="register-screen" id="register-screen">
 
@@ -35,11 +35,6 @@
 
                 <img src="https://art.pixilart.com/c01b896727fec64.png" width="200" height="300">
 
-                <div class="fight-screen__player-hits zones">
-                    <button data-zone="head">Hit: Head</button>
-                    <button data-zone="body">Hit: Body</button>
-                    <button data-zone="legs">Hit: Legs</button>
-                </div>
 
                 <div class="fight-screen__player-blocks blocks">
                     <button data-zone="head">Block: Head</button>
@@ -48,15 +43,22 @@
                 </div>
             </div>
 
+            <div class="logs-container" id="logs-container">
+            <h2>Battle log</h2>
+            <aside class="logs-container__battle-log" id="battle-log" aria-placeholder="battle-log"></aside>
+            <button class="logs-container__btn" id="attack-btn">Finish your move</button>
+            </div>
+
             <div class="fight-screen__enemy" id="enemy">
                 <h2 class="fight-screen__enemy-name" id="enemy-name"></h2>
                 <div class="fight-screen__enemy-hp" id="enemy-hp"></div>
                 <img src="" alt="enemy" id="enemy-img" class="fight-screen__enemy-img" width="200" height="300">
+                <div class="fight-screen__enemy-hits zones">
+                    <button data-zone="head">Hit: Head</button>
+                    <button data-zone="body">Hit: Body</button>
+                    <button data-zone="legs">Hit: Legs</button>
+                </div>
             </div>
-
-            <button class="fight-screen__btn" id="attack-btn">Finish your move</button>
-
-            <aside class="fight-screen__battle-log" id="battle-log" aria-placeholder="battle-log"></aside>
 
         </section>
 

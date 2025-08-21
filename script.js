@@ -56,7 +56,7 @@ const enemies = [
 
 // FIGHT VARIABLES
 
-let currentEnemyIndex = 1;
+let currentEnemyIndex = 0;
 
 let playerAttack = null;
 let playerBlocks = [];

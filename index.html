@@ -4,55 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Not Fight Club</title>
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-    <main>
+    <main class="main">
         
         <section class="register-screen" id="register-screen">
 
             <h1 class="register-screen__title">Create Your Character</h1>
             <label for="player-name">Character name</label>
             <input class="register-screen__input" type="text" id="player-name" placeholder="Type name">
-            <button class="register-screen__btn" id="register-screen__btn save-name">Create Character</button>
+            <button class="register-screen__btn" id="save-name">Create Character</button>
 
         </section>
 
-        <section class="lobby-screen hidden">
+        <section class="lobby-screen hidden" id="lobby-screen">
 
-            <button class="lobby-screen__btn">Fight!</button>
+            <h2>Hello, <span class="looby-player-name" id="lobby-player-name"></span></h2>
+            <button class="lobby-screen__btn" id="start-fight-btn">Fight!</button>
 
         </section>
     
         <section class="fight-screen hidden" id="fight-screen">
 
-            <div class="fight-screen__player">
+            <div class="fight-screen__player" id="player">
 
-                <h2 class="fight-screen__player-name" id="fight-screen__player-name player-name-display"></h2>
+                <h2 class="fight-screen__player-name" id="player-name-display"></h2>
 
-                <div class="fight-screen__player-hp" id="fight-screen__player-hp player-hp"></div>
+                <div class="fight-screen__player-hp" id="player-hp"></div>
 
-                <div class="fight-screen__player-hits">
+                <img src="https://art.pixilart.com/c01b896727fec64.png" width="200" height="300">
+
+                <div class="fight-screen__player-hits zones">
                     <button data-zone="head">Hit: Head</button>
                     <button data-zone="body">Hit: Body</button>
                     <button data-zone="legs">Hit: Legs</button>
                 </div>
 
-                <div class="fight-screen__player-blocks">
+                <div class="fight-screen__player-blocks blocks">
                     <button data-zone="head">Block: Head</button>
                     <button data-zone="body">Block: Body</button>
                     <button data-zone="legs">Block: Legs</button>
                 </div>
             </div>
 
-            <div class="fight-screen__enemy" id="fight-screen__enemy enemy">
-                <h2 class="fight-screen__enemy-name" id="fight-screen__enemy-name enemy-name"></h2>
-                <div class="fight-screen__enemy-hp" id="fight-screen__enemy-hp enemy-hp"></div>
+            <div class="fight-screen__enemy" id="enemy">
+                <h2 class="fight-screen__enemy-name" id="enemy-name"></h2>
+                <div class="fight-screen__enemy-hp" id="enemy-hp"></div>
+                <img src="" alt="enemy" id="enemy-img" class="fight-screen__enemy-img" width="200" height="300">
             </div>
 
-            <button class="fight-screen__btn" id="fight-screen__btn attack__btn">Finish your move</button>
+            <button class="fight-screen__btn" id="attack-btn">Finish your move</button>
 
-            <aside class="fight-screen__battle-log" id="fight-screen__battle-log battle-log"></aside>
+            <aside class="fight-screen__battle-log" id="battle-log" aria-placeholder="battle-log"></aside>
 
         </section>
 

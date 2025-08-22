@@ -283,7 +283,7 @@ function endFight() {
         // CLEAR LOGS
         battleLog.innerHTML = '';
         // REMOVE BUTTON
-        fightScreen.removeChild(nxtBtn);
+        nxtBtn.remove();
         //ATTACK BUTTON ENABLED
         attackBtn.disabled = false;
         // START NEW FIGHT

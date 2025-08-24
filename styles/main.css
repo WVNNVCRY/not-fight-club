@@ -232,6 +232,14 @@ button:hover {
   background-color: rgb(243, 229, 35);
 }
 
+.header__nav {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -252,7 +260,7 @@ button:hover {
   line-height: 1;
 }
 .register-screen__input {
-  margin-block: 10px;
+  margin-block: 20px;
 }
 
 .lobby-screen {
@@ -260,6 +268,44 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.character-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.character-screen__title {
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.character-screen__avatars {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.character-screen__avatars:hover {
+  cursor: pointer;
+}
+.character-screen__avatars img.selected {
+  outline: 1px solid black;
+  background-color: transparent;
+  border-radius: 10%;
+}
+
+.settings-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.settings-screen input {
+  margin-bottom: 20px;
+}
+.settings-screen label {
+  align-self: flex-start;
+  margin-bottom: 5px;
 }
 
 .fight-screen {

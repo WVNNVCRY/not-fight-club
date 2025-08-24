@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
+    <header class="header">
+        <nav class="header__nav">
+            <button id="nav-lobby">Lobby</button>
+            <button id="nav-character">Character</button>
+            <button id="nav-settings">Settings</button>
+        </nav>
+    </header>
     <main class="main container">
         
         <section class="register-screen" id="register-screen">
@@ -16,6 +23,22 @@
             <input class="register-screen__input" type="text" id="player-name" placeholder="Type name">
             <button class="register-screen__btn" id="save-name">Create Character</button>
 
+        </section>
+
+        <section class="character-screen hidden" id="character-screen">
+            <h2 class="character-screen__title">Choose your hero</h2>
+            <div class="character-screen__avatars avatars">
+                <img src="./img/hero1.png" alt="hero" data-avatar="./img/hero1.png" width="200" height="300">
+                <img src="./img/hero2.png" alt="hero" data-avatar="./img/hero2.png" width="200" height="300">
+            </div>
+            <button id="choose-avatar-btn">Save</button>
+        </section>
+
+        <section class="settings-screen hidden" id="settings-screen">
+            <h2>Settings</h2>
+            <label for="player-name-input">Player name</label>
+            <input type="text" id="player-name-input" placeholder="Change name" value="">
+            <button id="save-settings-btn">Save</button>
         </section>
 
         <section class="lobby-screen hidden" id="lobby-screen">
@@ -33,7 +56,7 @@
 
                 <div class="fight-screen__player-hp" id="player-hp"></div>
 
-                <img src="https://art.pixilart.com/c01b896727fec64.png" width="200" height="300">
+                <img id="player-avatar" src="./img/hero1.png" width="200" height="300">
 
 
                 <div class="fight-screen__player-blocks blocks">

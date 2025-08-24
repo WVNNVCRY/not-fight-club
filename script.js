@@ -57,6 +57,7 @@ const enemies = [
 // FIGHT VARIABLES
 
 let currentEnemyIndex = 0;
+let currentEnemy = null;
 
 let playerAttack = null;
 let playerBlocks = [];
@@ -71,7 +72,9 @@ const registerScreen = document.getElementById('register-screen');
 const lobbyScreen = document.getElementById('lobby-screen')
 const fightScreen = document.getElementById('fight-screen');
 const battleLog = document.getElementById('battle-log');
-const logsContainer = document.getElementById('logs-container')
+const logsContainer = document.getElementById('logs-container');
+const characterScreen = document.getElementById('character-screen');
+const settingsScreen = document.getElementById('settings-screen');
 
 // ELEMENTS
 
@@ -90,6 +93,69 @@ const enemyImage = document.getElementById('enemy-img');
 
 const attackBtn = document.getElementById('attack-btn');
 
+const saveCharacterBtn = document.getElementById('choose-avatar-btn');
+
+// SETTINGS ELEMENTS
+const settingsNameInput = document.getElementById('player-name-input');
+const saveSettingsBtn = document.getElementById('save-settings-btn');
+
+// CHARACTER AVATARS
+const avatarImages = document.querySelectorAll('#character-screen .avatars img');
+let selectedAvatar = player.avatar || './img/hero1.png'; // Default avatar
+
+// NAV BUTTONS
+const navLobbyBtn = document.getElementById('nav-lobby');
+const navCharacterBtn = document.getElementById('nav-character');
+const navSettingsBtn = document.getElementById('nav-settings');
+
+// NAV FUNC
+
+function showScreen(screen) {
+    [registerScreen, lobbyScreen, fightScreen, characterScreen, settingsScreen]
+    .forEach(item => {
+        if (item) item.classList.add('hidden');
+    });
+    screen.classList.remove('hidden');
+}
+
+navLobbyBtn.addEventListener('click', () => {
+    showScreen(lobbyScreen)
+    resetStats();
+});
+navCharacterBtn.addEventListener('click', () => {
+    showScreen(characterScreen)
+    resetStats();
+});
+navSettingsBtn.addEventListener('click', () => {
+    showScreen(settingsScreen)
+    resetStats();
+});
+
+// SETTING SCREEN
+saveSettingsBtn.addEventListener('click', () => {
+    const name = settingsNameInput.value.trim();
+    if (!name) return;
+
+    player.name = name;
+    lobbyName.textContent = name;
+    
+    showScreen(lobbyScreen);
+    updateUI();
+    resetStats();
+})
+
+
+
+// RESET FUNC
+function resetStats() {
+    // CLEAR LOGS
+    battleLog.innerHTML = '';
+    // HEALING PLAYER TO DEFAULT
+    player.hp = player.maxHp;
+    // HEALING ENEMY TO DEFAULT
+    currentEnemy.hp = currentEnemy.maxHp;
+}
+
 // REG
 
 saveNameBtn.addEventListener('click', () => {
@@ -106,9 +172,38 @@ saveNameBtn.addEventListener('click', () => {
     lobbyScreen.classList.remove('hidden');
 })
 
+// CHANGE AVATAR
+
+avatarImages.forEach(img => {
+    img.addEventListener('click', () => {
+        avatarImages.forEach(item => item.classList.remove('selected'));
+        img.classList.add('selected');
+        selectedAvatar = img.dataset.avatar;
+    })
+})
+
+saveCharacterBtn.addEventListener('click', () => {
+    player.avatar = selectedAvatar;
+    updateUI();
+    
+    if (!player.name || player.name.trim() === '') {
+        showScreen(registerScreen);
+        return;
+    }
+    showScreen(lobbyScreen);
+    // CLEAR LOGS
+    battleLog.innerHTML = '';
+})
+
 // LOBBY
 
 lobbyFightBtn.addEventListener('click', () => {
+    // CHECK NAME
+    if (!player.name || player.name.trim() === '') {
+        alert('Please enter your name first!');
+        showScreen(registerScreen);
+        return;
+    }
     startFight()
 })
 
@@ -119,13 +214,6 @@ function startFight() {
     // CHOSE CURRENT ENEMY
 
     currentEnemy = { ...enemies[currentEnemyIndex]};
-
-    // RESTART TO FIRST ENEMY
-
-    currentEnemyIndex++;
-    if (currentEnemyIndex >= enemies.length) {
-        currentEnemyIndex = 0;
-    }
 
     // SWITCH SCREEN
 
@@ -140,16 +228,30 @@ function startFight() {
 function updateUI() {
     playerNameDisplay.textContent = player.name;
     playerHp.textContent = `${player.hp} / ${player.maxHp}`;
-    enemyName.textContent = currentEnemy.name;
-    enemyHp.textContent = `${currentEnemy.hp} / ${currentEnemy.maxHp}`;
 
-    if (currentEnemy.image) {
-        enemyImage.src = currentEnemy.image;
-        enemyImage.style.display = 'block';
+    // PLAYER AVATAR
+    const playerAvatar = document.getElementById('player-avatar');
+    if (playerAvatar && player.avatar) {
+        playerAvatar.src = player.avatar;
+    }
+
+    // CURRENT ENEMY
+    if (currentEnemy) {
+        enemyName.textContent = currentEnemy.name;
+        enemyHp.textContent = `${currentEnemy.hp} / ${currentEnemy.maxHp}`;
+        if (currentEnemy.image) {
+            enemyImage.src = currentEnemy.image;
+            enemyImage.style.display = 'block';
+        } else {
+            enemyImage.style.display = 'none';
+        }
     } else {
+        enemyName.textContent = '';
+        enemyHp.textContent = '';
         enemyImage.style.display = 'none';
     }
 }
+
 
 // LOGS
 
@@ -265,17 +367,37 @@ function getRandomZones(count) {
 // END FUNC
 
 function endFight() {
-    if (player.hp <= 0 && currentEnemy.hp <= 0) addLogs('Draw!')
-    else if (player.hp <= 0) addLogs(`${currentEnemy.name} win!`)
-    else addLogs(`${player.name} win!`)
+    let result;
+
+    if (player.hp <= 0 && currentEnemy.hp <= 0) {
+        result = 'draw';
+        addLogs('Draw!');
+    } else if (player.hp <= 0) {
+        result = 'enemy';
+        addLogs(`${currentEnemy.name} win!`);
+    } else {
+        result = 'player';
+        addLogs(`${player.name} win!`);
+    }
 
     // DISABLED ATTACK BUTTON
     attackBtn.disabled = true;
 
     // RESET TO LOBBY
     const nxtBtn = document.createElement('button');
-    nxtBtn.textContent = 'Next fight!';
+    nxtBtn.textContent = (result === 'player') ? 'Next Fight!' : 'Try Again!';
+    nxtBtn.classList.add('logs-container__next-btn');
+
+    // NEXT ENEMY IF PLAYER WIN
     nxtBtn.addEventListener('click', () => {
+        if (result === 'player') {
+            currentEnemyIndex++;
+            if (currentEnemyIndex >= enemies.lenght) {
+                currentEnemyIndex = 0;
+                alert('You have defeated all enemies! Starting from the first enemy again.');
+            }
+        }
+
         // HEALING PLAYER TO DEFAULT
         player.hp = player.maxHp;
         // HEALING ENEMY TO DEFAULT
@@ -288,8 +410,7 @@ function endFight() {
         attackBtn.disabled = false;
         // START NEW FIGHT
         startFight()
-    });
+    })
     logsContainer.insertBefore(nxtBtn, attackBtn);
-    nxtBtn.classList.add('logs-container__next-btn');
 }
 })

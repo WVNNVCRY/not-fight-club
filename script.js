@@ -59,7 +59,7 @@ const enemies = [
 let currentEnemyIndex = 0;
 let currentEnemy = null;
 
-let playerAttack = null;
+let playerAttack = [];
 let playerBlocks = [];
 
 const attackButtons = document.querySelectorAll('#enemy .zones button');
@@ -103,6 +103,10 @@ const saveSettingsBtn = document.getElementById('save-settings-btn');
 const avatarImages = document.querySelectorAll('#character-screen .avatars img');
 let selectedAvatar = player.avatar || './img/hero1.png'; // Default avatar
 
+// HEROES
+const blueKnight = document.getElementById('blue-knight');
+const redKnight = document.getElementById('red-knight');
+
 // NAV BUTTONS
 const navLobbyBtn = document.getElementById('nav-lobby');
 const navCharacterBtn = document.getElementById('nav-character');
@@ -138,13 +142,64 @@ saveSettingsBtn.addEventListener('click', () => {
 
     player.name = name;
     lobbyName.textContent = name;
-    
+
     showScreen(lobbyScreen);
     updateUI();
     resetStats();
 })
 
+// SELECT HEROES
 
+function selectHero(hero) {
+    // STATS
+    player.maxHp = hero.maxHp;
+    player.hp = hero.hp;
+    player.baseDamage = hero.baseDamage;
+    player.critChance = hero.critChance;
+    player.critMultiplier = hero.critMultiplier;
+    player.attackSlots = hero.attackSlots;
+    player.blockSlots = hero.blockSlots;
+    player.avatar = hero.avatar;
+
+    // UPDATE UI
+    updateUI();
+
+    // RESET SELECTIONS
+    resetPlayerSelections();
+}
+
+blueKnight.addEventListener('click', () => {
+    selectHero({
+        maxHp: 150,
+        hp: 150,
+        baseDamage: 10,
+        critChance: 0.2,
+        critMultiplier: 2.5,
+        attackSlots: 1,
+        blockSlots: 2,
+    });
+});
+
+redKnight.addEventListener('click', () => {
+    selectHero({
+        maxHp: 100,
+        hp: 100,
+        baseDamage: 5,
+        critChance: 0.4,
+        critMultiplier: 2.5,
+        attackSlots: 2,
+        blockSlots: 1,
+    });
+});
+
+function resetPlayerSelections() {
+    playerAttack = [];
+    playerBlocks = [];
+    attackButtons.forEach(btn => btn.classList.remove('selected'));
+    blockButtons.forEach(btn => btn.classList.remove('selected'));
+    attackButtons.forEach(btn => btn.disabled = false);
+    blockButtons.forEach(btn => btn.disabled = false);
+}
 
 // RESET FUNC
 function resetStats() {
@@ -160,10 +215,9 @@ function resetStats() {
 
 saveNameBtn.addEventListener('click', () => {
     const name = playerNameInput.value.trim();
-    if(!name) return
+    if(!name) return;
 
     player.name = name;
-    localStorage.setItem('player', JSON.stringify(player));
 
     // SWITCH SCREEN
 
@@ -172,7 +226,7 @@ saveNameBtn.addEventListener('click', () => {
     lobbyScreen.classList.remove('hidden');
 })
 
-// CHANGE AVATAR
+// CHANGE HERO
 
 avatarImages.forEach(img => {
     img.addEventListener('click', () => {
@@ -211,7 +265,7 @@ lobbyFightBtn.addEventListener('click', () => {
 
 function startFight() {
 
-    // CHOSE CURRENT ENEMY
+    // CHOOSE CURRENT ENEMY
 
     currentEnemy = { ...enemies[currentEnemyIndex]};
 
@@ -266,32 +320,42 @@ function addLogs(text) {
 
 attackButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        // REMOVE CLASS FOR SWITCHING BETWEEN BUTTONS
-        attackButtons.forEach(b => b.classList.remove('selected'));
-        // ADD CLASS FOR SELECTED BUTTON
-        btn.classList.add('selected');
-        // GET DATA-ZONE OF SELECTED BUTTON
-        playerAttack = btn.dataset.zone;
-    })
-})
+        const zone = btn.dataset.zone;
+
+        if (playerAttack.includes(zone)) {
+            
+            btn.classList.remove('selected');
+            playerAttack = playerAttack.filter(item => item !== zone);
+        } else {
+            
+            if (playerAttack.length < player.attackSlots) {
+                btn.classList.add('selected');
+                playerAttack.push(zone);
+            } else {
+                alert(`You can select only ${player.attackSlots} attack${player.attackSlots > 1 ? 's' : ''}`);
+            }
+        }
+    });
+});
 
 // PLAYER BLOCKS
 
 blockButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        // GET DATA-ZONE OF BUTTON
         const zone = btn.dataset.zone;
 
         if (playerBlocks.includes(zone)) {
             btn.classList.remove('selected');
-            playerBlocks = playerBlocks.filter(item => item !== zone)
+            playerBlocks = playerBlocks.filter(item => item !== zone);
         } else {
             if (playerBlocks.length < player.blockSlots) {
                 btn.classList.add('selected');
-                playerBlocks.push(zone)
+                playerBlocks.push(zone);
+            } else {
+                alert(`You can select only ${player.blockSlots} block${player.blockSlots > 1 ? 's' : ''}`);
             }
         }
-    })
+    });
 });
 
 // DAMAGE
@@ -331,15 +395,18 @@ function computeDamage(attacker, defender, attackZones, defendZones) {
 // HITS AND CHECK BATTLE
 
 attackBtn.addEventListener('click', () => {
-    if (!playerAttack || playerBlocks.length !== player.blockSlots) {
-        alert(`Choose ${player.attackSlots} hit${player.attackSlots > 1 ? 's' : ''} and ${player.blockSlots} block zones`);
+    if (playerAttack.length !== player.attackSlots || playerBlocks.length !== player.blockSlots) {
+        alert(
+            `Please select ${player.attackSlots} attack${player.attackSlots > 1 ? 's' : ''} ` +
+            `and ${player.blockSlots} block${player.blockSlots > 1 ? 's' : ''} before finishing your move.`
+        );
         return;
     }
     // ENEMY ZONES RANDOM
     const enemyAttacks = getRandomZones(currentEnemy.attackSlots);
     const enemyBlocks = getRandomZones(currentEnemy.blockSlots);
     // COMP LOGS
-    const log1 = computeDamage(player, currentEnemy, [playerAttack], enemyBlocks);
+    const log1 = computeDamage(player, currentEnemy, playerAttack, enemyBlocks);
     const log2 = computeDamage(currentEnemy, player, enemyAttacks, playerBlocks);
     // RETURN LOGS
     [...log1, ...log2].forEach(addLogs);
@@ -347,10 +414,7 @@ attackBtn.addEventListener('click', () => {
     updateUI();
 
     // SET TO DEFAULT
-    playerAttack = null;
-    playerBlocks = [];
-    attackButtons.forEach(item => item.classList.remove('selected'));
-    blockButtons.forEach(item => item.classList.remove('selected'));
+    resetPlayerSelections();
 
     // CHECK
     if (player.hp <= 0 || currentEnemy.hp <= 0) {
@@ -374,43 +438,71 @@ function endFight() {
         addLogs('Draw!');
     } else if (player.hp <= 0) {
         result = 'enemy';
-        addLogs(`${currentEnemy.name} win!`);
+        addLogs(`${currentEnemy.name} wins!`);
     } else {
         result = 'player';
-        addLogs(`${player.name} win!`);
+        addLogs(`${player.name} wins!`);
     }
 
-    // DISABLED ATTACK BUTTON
     attackBtn.disabled = true;
 
-    // RESET TO LOBBY
     const nxtBtn = document.createElement('button');
-    nxtBtn.textContent = (result === 'player') ? 'Next Fight!' : 'Try Again!';
     nxtBtn.classList.add('logs-container__next-btn');
 
-    // NEXT ENEMY IF PLAYER WIN
-    nxtBtn.addEventListener('click', () => {
-        if (result === 'player') {
-            currentEnemyIndex++;
-            if (currentEnemyIndex >= enemies.lenght) {
-                currentEnemyIndex = 0;
-                alert('You have defeated all enemies! Starting from the first enemy again.');
-            }
+    if (result === 'player') {
+        if (currentEnemyIndex >= enemies.length - 1) {
+            // LAST ENEMY DEFEATED
+            nxtBtn.textContent = 'Victory! Back to Lobby';
+            nxtBtn.addEventListener('click', () => {
+                alert('You defeated all enemies! Returning to lobby.');
+                currentEnemyIndex = 0; // RESET ENEMY INDEX
+                resetPlayerSelections();
+                updateUI();
+                showScreen(lobbyScreen);
+                // HEALING PLAYER TO DEFAULT
+                player.hp = player.maxHp;
+                // HEALING ENEMY TO DEFAULT
+                currentEnemy.hp = currentEnemy.maxHp;
+                // CLEAR LOGS
+                battleLog.innerHTML = '';
+                nxtBtn.remove();
+            });
+        } else {
+            // Ещё есть враги
+            nxtBtn.textContent = 'Next Fight!';
+            nxtBtn.addEventListener('click', () => {
+                currentEnemyIndex++;  // NEXT ENEMY INDEX
+                currentEnemy = { ...enemies[currentEnemyIndex] }; // SELECT NEXT ENEMY
+                resetPlayerSelections();
+                attackBtn.disabled = false;
+                // HEALING PLAYER TO DEFAULT
+                player.hp = player.maxHp;
+                // HEALING ENEMY TO DEFAULT
+                currentEnemy.hp = currentEnemy.maxHp;
+                // CLEAR LOGS
+                battleLog.innerHTML = '';
+                startFight();
+                nxtBtn.remove();
+            });
         }
+    } else {
+        // DEFEAT
+        nxtBtn.textContent = 'Try Again!';
+        nxtBtn.addEventListener('click', () => {
+            currentEnemy = { ...enemies[currentEnemyIndex] }; // SELECT ENEMY AGAIN
+            resetPlayerSelections();
+            attackBtn.disabled = false;
+            // HEALING PLAYER TO DEFAULT
+            player.hp = player.maxHp;
+            // HEALING ENEMY TO DEFAULT
+            currentEnemy.hp = currentEnemy.maxHp;
+            // CLEAR LOGS
+            battleLog.innerHTML = '';
+            startFight();
+            nxtBtn.remove();
+        });
+    }
 
-        // HEALING PLAYER TO DEFAULT
-        player.hp = player.maxHp;
-        // HEALING ENEMY TO DEFAULT
-        currentEnemy.hp = currentEnemy.maxHp;
-        // CLEAR LOGS
-        battleLog.innerHTML = '';
-        // REMOVE BUTTON
-        nxtBtn.remove();
-        //ATTACK BUTTON ENABLED
-        attackBtn.disabled = false;
-        // START NEW FIGHT
-        startFight()
-    })
     logsContainer.insertBefore(nxtBtn, attackBtn);
 }
 })
